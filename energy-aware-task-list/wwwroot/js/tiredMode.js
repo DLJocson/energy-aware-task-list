@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(notification);
         activeNotification = notification;
 
+
+
         // Initialize Lucide icons for the notification
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
@@ -54,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeNotification === notification) {
                 activeNotification = null;
             }
+            window.removeEventListener('scroll', updateNotificationPosition);
         }, 3000);
     }
 

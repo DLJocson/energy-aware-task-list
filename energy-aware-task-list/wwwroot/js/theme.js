@@ -1,3 +1,19 @@
+// --- Lucide monkey-patch: Always update theme toggle icon after any lucide.createIcons() call --- 
+if (window.lucide && !window._lucidePatched) {
+    const origCreateIcons = lucide.createIcons;
+    lucide.createIcons = function(...args) {
+        const result = origCreateIcons.apply(this, args);
+        // Always update the theme toggle icon after any icon re-render
+        setTimeout(() => {
+            if (window.themeManager && window.themeManager.updateToggleIcon) {
+                const toggle = document.getElementById('themeToggle');
+                if (toggle) window.themeManager.updateToggleIcon(toggle);
+            }
+        }, 0);
+        return result;
+    };
+    window._lucidePatched = true;
+}
 // ========================================
 // theme.js
 // Theme management and modal system
@@ -26,20 +42,21 @@ class ThemeManager {
     }
 
     init() {
-        // Setup toggle listener
+        // Use event delegation to avoid losing the event after lucide.createIcons()
+        if (!this._delegated) {
+            document.body.addEventListener('click', (e) => {
+                const btn = e.target.closest('#themeToggle');
+                if (btn) {
+                    e.preventDefault();
+                    this.toggleTheme();
+                }
+            });
+            this._delegated = true;
+        }
+        // Always update the icon to match the current theme
         const toggle = document.getElementById('themeToggle');
         if (toggle) {
-            // Remove any existing listeners to prevent duplicates
-            const newToggle = toggle.cloneNode(true);
-            toggle.parentNode.replaceChild(newToggle, toggle);
-            
-            newToggle.addEventListener('click', (e) => {
-                e.preventDefault(); 
-                this.toggleTheme();
-            });
-            
-            // Ensure icon matches current theme (in case re-render is needed)
-            this.updateToggleIcon(newToggle);
+            this.updateToggleIcon(toggle);
         }
     }
 
@@ -47,12 +64,13 @@ class ThemeManager {
         document.documentElement.setAttribute('data-theme', theme);
         this.theme = theme;
         localStorage.setItem('theme', theme);
-        
-        // Update icons
-        const toggle = document.getElementById('themeToggle');
-        if (toggle) {
-            this.updateToggleIcon(toggle);
-        }
+        // Always update the icon after theme change
+        setTimeout(() => {
+            const toggle = document.getElementById('themeToggle');
+            if (toggle) {
+                this.updateToggleIcon(toggle);
+            }
+        }, 0);
     }
 
     toggleTheme() {
@@ -269,13 +287,16 @@ class ModalManager {
             cancelText = 'Cancel',
             type = 'warning' // warning, danger, info
         } = options;
-
-        return new Promise((resolve) => {
-            const modalId = 'confirmModal';
-            let modal = document.getElementById(modalId);
-
-            // Create modal if it doesn't exist
-            if (!modal) {
+                newToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('Theme toggle clicked');
+                    this.toggleTheme();
+                });
+                // Ensure icon matches current theme (in case re-render is needed)
+                this.updateToggleIcon(newToggle);
+            } else {
+                // Try again after a short delay in case DOM is not ready
+                setTimeout(() => this.init(), 500);
                 modal = this.createConfirmModal(modalId);
                 document.body.appendChild(modal);
             }

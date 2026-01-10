@@ -61,7 +61,7 @@ dotnet build
 dotnet run --project energy-aware-task-list/energy-aware-task-list.csproj
 
 # 5. Open your browser and go to:
-http://localhost:5000
+http://localhost:5238
 ```
 
 ---

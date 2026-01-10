@@ -1,4 +1,7 @@
 /* ========================================
+html, body {
+    overflow-x: hidden !important;
+}
    site.css
    BatteryFlow Design System & Component Styles
    
@@ -91,16 +94,7 @@
 }
 
 /* Respect user motion preferences for accessibility */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-}
+
 
 /* Dark Mode Colors - FIXED: Enhanced contrast and consistency */
 [data-theme="dark"] {
@@ -1065,9 +1059,11 @@ html {
 }
 
 /* Tired Mode feedback notification - FIXED: proper z-index and positioning */
+/* Tired Mode feedback notification - now absolute, moves with scroll */
+/* Tired Mode feedback notification - fixed at top of viewport */
 .tired-mode-notification {
     position: fixed;
-    top: 80px; /* Below header */
+    top: 80px;
     right: 20px;
     background: linear-gradient(135deg, var(--gradient-tired-start) 0%, var(--gradient-tired-end) 100%);
     color: white;
@@ -2203,12 +2199,3 @@ html {
 }
 
 /* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
