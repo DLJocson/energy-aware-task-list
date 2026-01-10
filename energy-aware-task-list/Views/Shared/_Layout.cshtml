@@ -3,48 +3,56 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - energy_aware_task_list</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/energy_aware_task_list.styles.css" asp-append-version="true" />
+    <title>Battery Workflow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Tailwind custom classes with CSS variables */
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">energy_aware_task_list</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+<body class="font-sans pb-20 smooth-transition">
+    <header class="glass-effect sticky top-0 z-20 border-b shadow-sm smooth-transition" style="border-color: var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);">
+        <div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg transform rotate-3 hover-lift" style="background: var(--accent-primary); box-shadow: 0 4px 12px var(--shadow-color);">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tight" style="color: var(--text-primary);">
+                        Battery<span style="color: var(--accent-primary);">Flow</span>
+                    </h1>
+                    <p class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary); opacity: 0.8;">Energy Manager</p>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - energy_aware_task_list - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="flex gap-2">
+                <!-- Dark Mode Toggle -->
+                <button id="themeToggle" class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm hover-lift" style="background: var(--card-bg); color: var(--accent-primary); border: 1px solid var(--border-color);" title="Toggle dark mode">
+                    <i data-lucide="moon" class="w-6 h-6"></i>
+                </button>
+                
+                <!-- Settings Trigger -->
+                <button onclick="toggleSettingsModal()" class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm hover-lift" style="background: var(--card-bg); color: var(--accent-primary); border: 1px solid var(--border-color);" title="Settings">
+                    <i data-lucide="settings" class="w-6 h-6"></i>
+                </button>
+            </div>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    </header>
+
+    <main role="main" class="max-w-2xl mx-auto px-4 py-6 space-y-6">
+        @RenderBody()
+    </main>
+
+    <script src="~/js/theme.js"></script>
+    <script src="~/js/tiredMode.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

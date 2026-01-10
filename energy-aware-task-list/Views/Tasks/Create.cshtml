@@ -1,0 +1,73 @@
+﻿@model BatteryWorkflowMVC.ViewModels.TaskFormViewModel
+
+<div class="glass-effect rounded-[2rem] shadow-xl p-6 card-enter" style="border: 1px solid var(--border-color); box-shadow: 0 8px 24px var(--shadow-color);">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="font-bold text-xl" style="color: var(--text-primary);">New Task</h3>
+        <a asp-action="Index" class="p-2 rounded-full smooth-transition hover-lift" style="color: var(--accent-primary); background: var(--input-bg);"><i data-lucide="x" class="w-5 h-5"></i></a>
+    </div>
+
+    <form asp-action="Create" class="space-y-5" id="createTaskForm">
+        <div>
+            <label asp-for="Title" class="block text-xs font-bold uppercase mb-1.5 ml-1" style="color: var(--text-secondary);">Title</label>
+            <input asp-for="Title" class="w-full px-5 py-3 rounded-2xl border-2 font-body font-medium smooth-transition" style="background: var(--input-bg); border-color: transparent; color: var(--text-primary);" placeholder="What needs to be done?" autofocus required />
+            <span asp-validation-for="Title" class="text-rose-500 text-xs font-bold ml-1"></span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label asp-for="Category" class="block text-xs font-bold uppercase mb-1.5 ml-1" style="color: var(--text-secondary);">Category</label>
+                <div class="relative">
+                    <select asp-for="Category" class="w-full px-5 py-3 rounded-2xl border-2 font-body font-medium smooth-transition appearance-none" style="background: var(--input-bg); border-color: transparent; color: var(--text-primary);">
+                        @foreach(var cat in BatteryWorkflowMVC.ViewModels.TaskFormViewModel.Categories) {
+                            <option value="@cat">@cat</option>
+                        }
+                    </select>
+                    <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--accent-primary);"></i>
+                </div>
+            </div>
+            <div>
+                <label asp-for="Deadline" class="block text-xs font-bold uppercase mb-1.5 ml-1" style="color: var(--text-secondary);">Deadline (Opt)</label>
+                <input asp-for="Deadline" type="date" class="w-full px-5 py-3 rounded-2xl border-2 font-body font-medium smooth-transition" style="background: var(--input-bg); border-color: transparent; color: var(--text-primary);" />
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold uppercase mb-2 ml-1" style="color: var(--text-secondary);">Energy Cost: <span id="energyValue" class="font-black text-lg" style="color: var(--text-primary);">@Model.EnergyCost</span></label>
+            <input asp-for="EnergyCost" type="range" min="5" max="100" step="5" class="w-full h-3 rounded-full appearance-none cursor-pointer" style="background: var(--input-bg); accent-color: var(--accent-primary);" oninput="document.getElementById('energyValue').innerText = this.value" />
+            <div class="flex justify-between text-xs mt-2 px-1 font-semibold" style="color: var(--text-muted);">
+                <span>Low (5)</span>
+                <span>Medium (20)</span>
+                <span>High (60+)</span>
+            </div>
+        </div>
+
+        <div>
+            <label asp-for="Description" class="block text-xs font-bold uppercase mb-1.5 ml-1" style="color: var(--text-secondary);">Description</label>
+            <textarea asp-for="Description" class="w-full px-5 py-3 rounded-2xl border-2 font-body font-medium resize-none h-24 smooth-transition" style="background: var(--input-bg); border-color: transparent; color: var(--text-primary);" placeholder="Details..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-animate w-full px-4 py-3.5 rounded-2xl text-white font-bold shadow-lg flex justify-center items-center gap-2" style="background: var(--accent-primary); box-shadow: 0 4px 12px var(--shadow-color);">
+            <i data-lucide="plus" class="w-5 h-5"></i> Add Task
+        </button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        
+        // Validate on submit
+        const form = document.getElementById('createTaskForm');
+        form.addEventListener('submit', async (e) => {
+            const title = form.querySelector('input[name="Title"]').value.trim();
+            if (!title) {
+                e.preventDefault();
+                await modalManager.alert({
+                    title: 'Validation Error',
+                    message: 'Please enter a task title.',
+                    type: 'error'
+                });
+            }
+        });
+    });
+</script>
