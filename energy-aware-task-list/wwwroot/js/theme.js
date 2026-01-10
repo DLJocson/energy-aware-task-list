@@ -1,55 +1,93 @@
 // ========================================
-// 🌙 Theme Management System
+// theme.js
+// Theme management and modal system
+// 
+// Purpose:
+// - ThemeManager: Handles light/dark mode switching with localStorage persistence
+// - ModalManager: Manages modal dialogs with focus trapping and accessibility
+// - Provides global instances: themeManager, modalManager
 // ========================================
+
+// --- Section: Theme Management ---
 
 class ThemeManager {
     constructor() {
         this.theme = localStorage.getItem('theme') || 'light';
-        this.init();
+        
+        // IMMEDIATE: Apply theme to document to prevent flash of wrong theme
+        this.applyTheme(this.theme);
+
+        // DEFERRED: Setup UI listeners when DOM is fully ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
     }
 
     init() {
-        // Apply saved theme
-        this.applyTheme(this.theme);
-        
-        // Listen for theme toggle
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('themeToggle');
-            if (toggle) {
-                toggle.addEventListener('click', () => this.toggleTheme());
-                this.updateToggleIcon();
-            }
-        });
+        // Setup toggle listener
+        const toggle = document.getElementById('themeToggle');
+        if (toggle) {
+            // Remove any existing listeners to prevent duplicates
+            const newToggle = toggle.cloneNode(true);
+            toggle.parentNode.replaceChild(newToggle, toggle);
+            
+            newToggle.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                this.toggleTheme();
+            });
+            
+            // Ensure icon matches current theme (in case re-render is needed)
+            this.updateToggleIcon(newToggle);
+        }
     }
 
     applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         this.theme = theme;
         localStorage.setItem('theme', theme);
-        this.updateToggleIcon();
+        
+        // Update icons
+        const toggle = document.getElementById('themeToggle');
+        if (toggle) {
+            this.updateToggleIcon(toggle);
+        }
     }
 
     toggleTheme() {
         const newTheme = this.theme === 'light' ? 'dark' : 'light';
         this.applyTheme(newTheme);
         
-        // Add smooth transition
+        // Add smooth transition to body
         document.body.style.transition = 'background-color 0.4s ease, color 0.4s ease';
         setTimeout(() => {
             document.body.style.transition = '';
         }, 400);
     }
 
-    updateToggleIcon() {
-        const toggle = document.getElementById('themeToggle');
+    updateToggleIcon(toggleElement) {
+        const toggle = toggleElement || document.getElementById('themeToggle');
         if (!toggle) return;
 
-        const icon = toggle.querySelector('i');
-        if (icon) {
-            icon.setAttribute('data-lucide', this.theme === 'dark' ? 'sun' : 'moon');
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+        // Completely recreate the icon content to handle Lucide's SVG replacement
+        const iconName = this.theme === 'dark' ? 'sun' : 'moon';
+        
+        // Clear previous content (SVG or i tag)
+        toggle.innerHTML = '';
+        
+        // Create new icon element
+        const icon = document.createElement('i');
+        icon.setAttribute('data-lucide', iconName);
+        icon.className = 'w-6 h-6'; // Preserve original classes
+        
+        toggle.appendChild(icon);
+
+        // Re-initialize icons for this specific element
+        if (window.lucide) {
+            lucide.createIcons({
+                root: toggle
+            });
         }
     }
 
@@ -106,15 +144,58 @@ class ModalManager {
     open(modalId) {
         const modal = this.modals.get(modalId) || document.getElementById(modalId);
         if (modal) {
+            // Store currently focused element to restore later
+            this.previousFocus = document.activeElement;
+            
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
             
+            // Setup keyboard dismissal (Esc key)
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    this.handleModalClose(modalId, modal);
+                }
+            };
+            modal.escapeHandler = handleEscape;
+            document.addEventListener('keydown', handleEscape);
+            
+            // Setup backdrop click dismissal
+            const handleBackdropClick = (e) => {
+                if (e.target === modal) {
+                    this.handleModalClose(modalId, modal);
+                }
+            };
+            modal.backdropHandler = handleBackdropClick;
+            modal.addEventListener('click', handleBackdropClick);
+            
+            // Setup focus trapping
+            this.setupFocusTrap(modal);
+            
             // Focus first input if exists
-            const firstInput = modal.querySelector('input, textarea, select');
+            const firstInput = modal.querySelector('input, textarea, select, button');
             if (firstInput) {
-                setTimeout(() => firstInput.focus(), 100);
+                setTimeout(() => firstInput.focus(), 150);
             }
         }
+    }
+    
+    async handleModalClose(modalId, modal) {
+        // Check if modal has unsaved changes
+        const hasUnsavedChanges = modal.querySelector('form')?.dataset.modified === 'true';
+        
+        if (hasUnsavedChanges) {
+            const confirmed = await this.confirm({
+                title: 'Unsaved Changes',
+                message: 'You have unsaved changes. Are you sure you want to close?',
+                confirmText: 'Discard Changes',
+                cancelText: 'Keep Editing',
+                type: 'warning'
+            });
+            
+            if (!confirmed) return;
+        }
+        
+        this.close(modalId);
     }
 
     close(modalId) {
@@ -122,7 +203,62 @@ class ModalManager {
         if (modal) {
             modal.classList.remove('show');
             document.body.style.overflow = '';
+            
+            // Clean up event listeners
+            if (modal.escapeHandler) {
+                document.removeEventListener('keydown', modal.escapeHandler);
+                delete modal.escapeHandler;
+            }
+            
+            if (modal.backdropHandler) {
+                modal.removeEventListener('click', modal.backdropHandler);
+                delete modal.backdropHandler;
+            }
+            
+            // Restore focus to previous element
+            if (this.previousFocus && this.previousFocus.focus) {
+                setTimeout(() => this.previousFocus.focus(), 100);
+            }
+            
+            // Clean up focus trap
+            if (modal.focusTrapHandler) {
+                modal.removeEventListener('keydown', modal.focusTrapHandler);
+                delete modal.focusTrapHandler;
+            }
+            
+            // Reset form modified state
+            const form = modal.querySelector('form');
+            if (form) {
+                delete form.dataset.modified;
+            }
         }
+    }
+    
+    setupFocusTrap(modal) {
+        const focusableElements = modal.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        
+        const handleTabKey = (e) => {
+            if (e.key !== 'Tab') return;
+            
+            if (e.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement.focus();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        };
+        
+        modal.focusTrapHandler = handleTabKey;
+        modal.addEventListener('keydown', handleTabKey);
     }
 
     confirm(options = {}) {
@@ -505,3 +641,139 @@ window.validationManager = validationManager;
 window.showSuccess = showSuccess;
 window.showError = showError;
 window.confirmAction = confirmAction;
+
+// Task start validation
+window.handleTaskStart = function(event, form, taskEnergy, remainingEnergy) {
+    if (taskEnergy > remainingEnergy) {
+        event.preventDefault();
+        const deficit = taskEnergy - remainingEnergy;
+        modalManager.alert({
+            title: 'Not Enough Energy',
+            message: `You need ${deficit} more energy points to start this task.\n\nCurrent: ${remainingEnergy} | Required: ${taskEnergy}`,
+            type: 'danger'
+        });
+        return false;
+    }
+    return true;
+};
+
+// ========================================
+// 🎯 Tooltip Positioning System
+// ========================================
+class TooltipManager {
+    constructor() {
+        this.activeTooltips = new Set();
+        this.spacing = 10; // Space between tooltip and element
+        this.init();
+    }
+    
+    init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            this.setupTooltipListeners();
+        });
+    }
+    
+    setupTooltipListeners() {
+        // Use event delegation for better performance
+        document.addEventListener('mouseenter', (e) => {
+            const tooltip = e.target.closest('.tooltip');
+            if (tooltip) {
+                this.showTooltip(tooltip);
+            }
+        }, true);
+        
+        document.addEventListener('mouseleave', (e) => {
+            const tooltip = e.target.closest('.tooltip');
+            if (tooltip) {
+                this.hideTooltip(tooltip);
+            }
+        }, true);
+        
+        // Reposition on scroll/resize
+        window.addEventListener('scroll', () => this.repositionAllTooltips(), true);
+        window.addEventListener('resize', () => this.repositionAllTooltips());
+    }
+    
+    showTooltip(tooltipElement) {
+        const tooltipText = tooltipElement.querySelector('.tooltip-text');
+        if (!tooltipText) return;
+        
+        // Prevent duplicate positioning
+        if (this.activeTooltips.has(tooltipElement)) {
+            this.positionTooltip(tooltipElement, tooltipText);
+            return;
+        }
+        
+        this.activeTooltips.add(tooltipElement);
+        this.positionTooltip(tooltipElement, tooltipText);
+    }
+    
+    hideTooltip(tooltipElement) {
+        this.activeTooltips.delete(tooltipElement);
+    }
+    
+    positionTooltip(tooltipElement, tooltipText) {
+        // Get trigger element position
+        const triggerRect = tooltipElement.getBoundingClientRect();
+        const tooltipRect = tooltipText.getBoundingClientRect();
+        
+        // Calculate preferred position (above)
+        let top = triggerRect.top - tooltipRect.height - this.spacing;
+        let left = triggerRect.left + (triggerRect.width / 2);
+        
+        // Collision detection
+        const viewport = {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            scrollX: window.scrollX,
+            scrollY: window.scrollY
+        };
+        
+        // Check if tooltip fits above
+        let position = 'top';
+        if (top < viewport.scrollY) {
+            // Flip to below if not enough space above
+            top = triggerRect.bottom + this.spacing;
+            position = 'bottom';
+        }
+        
+        // Check horizontal boundaries
+        const tooltipWidth = tooltipRect.width || 200; // fallback width
+        let translateX = -50; // default center alignment
+        
+        if (left - (tooltipWidth / 2) < 5) {
+            // Too far left, align to left edge
+            left = triggerRect.left;
+            translateX = 0;
+        } else if (left + (tooltipWidth / 2) > viewport.width - 5) {
+            // Too far right, align to right edge
+            left = triggerRect.right;
+            translateX = -100;
+        }
+        
+        // Apply positioning
+        tooltipText.style.position = 'fixed';
+        tooltipText.style.top = `${top}px`;
+        tooltipText.style.left = `${left}px`;
+        tooltipText.style.transform = `translateX(${translateX}%)`;
+        
+        // Update arrow position based on placement
+        tooltipText.setAttribute('data-position', position);
+        
+        // Store positioning for repositioning
+        tooltipText.dataset.positioned = 'true';
+    }
+    
+    repositionAllTooltips() {
+        this.activeTooltips.forEach(tooltipElement => {
+            const tooltipText = tooltipElement.querySelector('.tooltip-text');
+            if (tooltipText && tooltipText.dataset.positioned === 'true') {
+                this.positionTooltip(tooltipElement, tooltipText);
+            }
+        });
+    }
+}
+
+// Initialize tooltip manager
+const tooltipManager = new TooltipManager();
+window.tooltipManager = tooltipManager;

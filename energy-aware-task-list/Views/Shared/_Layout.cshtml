@@ -1,4 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@* ========================================
+   _Layout.cshtml
+   Master layout template for all pages
+   
+   Purpose:
+   - Defines common HTML structure (header, navigation, footer)
+   - Includes global assets (Tailwind CSS, Lucide icons, custom CSS/JS)
+   - Provides theme toggle and settings button
+   - Renders page-specific content via @RenderBody()
+   ======================================== *@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,7 +17,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="~/css/site.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Tailwind custom classes with CSS variables */
         body {
@@ -19,17 +29,18 @@
 <body class="font-sans pb-20 smooth-transition">
     <header class="glass-effect sticky top-0 z-20 border-b shadow-sm smooth-transition" style="border-color: var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);">
         <div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg transform rotate-3 hover-lift" style="background: var(--accent-primary); box-shadow: 0 4px 12px var(--shadow-color);">
+            <a href="/" class="flex items-center gap-3 group cursor-pointer smooth-transition tooltip hover-lift" style="text-decoration: none;">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg transform rotate-3 smooth-transition group-hover:rotate-6 group-hover:scale-105" style="background: var(--accent-primary); box-shadow: 0 4px 12px var(--shadow-color);">
                     <i data-lucide="sparkles" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-black tracking-tight" style="color: var(--text-primary);">
+                    <h1 class="text-2xl font-black tracking-tight group-hover:opacity-80 smooth-transition" style="color: var(--text-primary);">
                         Battery<span style="color: var(--accent-primary);">Flow</span>
                     </h1>
-                    <p class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary); opacity: 0.8;">Energy Manager</p>
+                    <p class="text-xs font-bold tracking-wide" style="color: var(--text-secondary); opacity: 0.8;">Energy manager</p>
                 </div>
-            </div>
+                <span class="tooltip-text">Go to Home</span>
+            </a>
             <div class="flex gap-2">
                 <!-- Dark Mode Toggle -->
                 <button id="themeToggle" class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm hover-lift" style="background: var(--card-bg); color: var(--accent-primary); border: 1px solid var(--border-color);" title="Toggle dark mode">
@@ -49,7 +60,11 @@
     </main>
 
     <script src="~/js/theme.js"></script>
+    <script src="~/js/animations.js"></script>
     <script src="~/js/tiredMode.js"></script>
+    <script src="~/js/searchFilter.js"></script>
+    <script src="~/js/popupPositioning.js"></script>
+    <script src="~/js/categoryTabs.js"></script>
     <script>
         lucide.createIcons();
     </script>

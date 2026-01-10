@@ -1,3 +1,14 @@
+// ========================================
+// TaskFormViewModel.cs
+// Task creation and editing form model
+// 
+// Purpose:
+// - Provides data structure for Create and Edit views
+// - Includes validation rules for form inputs
+// - Defines available task categories
+// - Used by both GET (display) and POST (submission) actions
+// ========================================
+
 using BatteryWorkflowMVC.Models;
 using System.ComponentModel.DataAnnotations;
 

@@ -1,3 +1,13 @@
+// ========================================
+// BatteryViewModel.cs
+// Battery meter display model
+// 
+// Purpose:
+// - Calculates and displays remaining energy percentage
+// - Shows daily budget, energy used, and reset time
+// - Powers the battery visualization on the dashboard
+// ========================================
+
 namespace BatteryWorkflowMVC.ViewModels
 {
     public class BatteryViewModel

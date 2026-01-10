@@ -1,3 +1,13 @@
+// ========================================
+// EnergyLevel.cs
+// Energy cost visual indicator helper
+// 
+// Purpose:
+// - Maps task energy costs to descriptive labels and colors
+// - Provides CSS classes for badge styling based on cost
+// - Cost ranges: Tiny(≤5), Small(≤10), Medium(≤20), High(≤40), Intense(≤60), Draining(>60)
+// ========================================
+
 namespace BatteryWorkflowMVC.Models
 {
     public class EnergyLevel

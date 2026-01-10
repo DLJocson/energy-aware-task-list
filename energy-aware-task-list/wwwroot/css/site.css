@@ -1,4 +1,23 @@
 /* ========================================
+   site.css
+   BatteryFlow Design System & Component Styles
+   
+   Purpose:
+   - Defines the sleep-like aesthetic theme (lavender/purple palette)
+   - Implements light and dark mode with CSS variables
+   - Provides reusable components: modals, forms, buttons, cards
+   - Includes animations, transitions, and responsive layouts
+   - Typography system based on Poppins (headings) and Nunito (body)
+   
+   Architecture:
+   1. CSS Variables (theming)
+   2. Typography & Animations
+   3. Interactive Components (buttons, modals, forms)
+   4. Utility Classes (hover effects, tooltips)
+   5. Page-specific Layouts (dashboard, task modals, category tabs)
+   ======================================== */
+
+/* ========================================
    🎨 CSS Variables for Theme Support
    ======================================== */
 :root {
@@ -24,9 +43,66 @@
     --neutral-700: #404040;
     --neutral-800: #262626;
     --neutral-900: #171717;
+    
+    /* Z-Index Layering System */
+    --z-base: 1;
+    --z-content: 10;
+    --z-sticky: 100;
+    --z-header: 1000;
+    --z-dropdown: 5000;
+    --z-overlay: 10000;
+    --z-modal-backdrop: 99999;
+    --z-modal: 100000;
+    --z-modal-content: 100001;
+    --z-notification: 100003;
+    --z-tooltip: 999999;
+
+    /* Semantic Colors */
+    --color-success: #10b981;
+    --color-error: #ef4444;
+    --color-warning: #f59e0b;
+    --color-info: #3b82f6;
+
+    /* Gradients */
+    --gradient-primary-start: var(--accent-primary);
+    --gradient-primary-end: #8B78E6;
+    
+    --gradient-danger-start: #ef4444;
+    --gradient-danger-end: #dc2626;
+
+    --gradient-success-start: #10b981;
+    --gradient-success-end: #059669;
+
+    --gradient-warning-start: #f59e0b;
+    --gradient-warning-end: #d97706;
+
+    --gradient-info-start: #3b82f6;
+    --gradient-info-end: #2563eb;
+
+    --gradient-tired-start: #4D2FB2;
+    --gradient-tired-end: #6B5FCC;
+
+    /* Animation Timing Variables */
+    --animation-speed-fast: 200ms;
+    --animation-speed-normal: 300ms;
+    --animation-speed-slow: 400ms;
+    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-easing-smooth: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Dark Mode Colors */
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Dark Mode Colors - FIXED: Enhanced contrast and consistency */
 [data-theme="dark"] {
     --bg-primary: #1a1625;
     --bg-secondary: #252031;
@@ -34,33 +110,70 @@
     --text-primary: #e5d9f2;
     --text-secondary: #b8a7d9;
     --text-muted: rgba(229, 217, 242, 0.7);
-    --accent-primary: #8b78e6;
+    --accent-primary: #9b87f5;
     --accent-secondary: #a594f9;
-    --border-color: rgba(139, 120, 230, 0.2);
-    --shadow-color: rgba(0, 0, 0, 0.3);
-    --card-bg: rgba(45, 40, 56, 0.9);
+    --border-color: rgba(155, 135, 245, 0.25);
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --card-bg: rgba(45, 40, 56, 0.95);
     --input-bg: #2d2838;
-    --modal-overlay: rgba(0, 0, 0, 0.7);
+    --modal-overlay: rgba(0, 0, 0, 0.75);
+    
+    /* Additional dark mode specific tokens */
+    --hover-bg: rgba(155, 135, 245, 0.1);
+    --active-bg: rgba(155, 135, 245, 0.2);
+
+    /* Dark Mode Semantic Colors */
+    --color-success: #34d399;
+    --color-error: #f87171;
+    --color-warning: #fbbf24;
+    --color-info: #60a5fa;
+
+    /* Gradients for Dark Mode */
+    --gradient-primary-end: #7c66d6;
+    
+    --gradient-danger-start: #f87171;
+    --gradient-danger-end: #ef4444;
+
+    --gradient-success-start: #34d399;
+    --gradient-success-end: #10b981;
+
+    --gradient-warning-start: #fbbf24;
+    --gradient-warning-end: #f59e0b;
+    
+    --gradient-info-start: #60a5fa;
+    --gradient-info-end: #3b82f6;
+
+    --gradient-tired-start: #6B5FCC;
+    --gradient-tired-end: #4D2FB2;
 }
 
 /* ========================================
    🖋️ Typography System
    ======================================== */
 body {
-    font-family: 'Quicksand', 'Segoe UI', sans-serif;
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
                 color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Ensure smooth theme transitions */
+* {
+    transition: background-color 0.3s ease, 
+                color 0.3s ease,
+                border-color 0.3s ease;
+}
+
 .font-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Headings - Bold & Rounded */
 h1, h2, h3, h4, h5, h6,
 .font-heading {
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
     letter-spacing: -0.02em;
 }
 
@@ -100,6 +213,73 @@ h1, h2, h3, h4, h5, h6,
     }
 }
 
+@keyframes modalBackdropFadeIn {
+    from {
+        backdrop-filter: blur(0px) saturate(100%);
+        -webkit-backdrop-filter: blur(0px) saturate(100%);
+    }
+    to {
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes tabActivate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes notificationSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 @keyframes shimmer {
     0% {
         background-position: -1000px 0;
@@ -136,22 +316,78 @@ h1, h2, h3, h4, h5, h6,
 .btn-animate {
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
 }
 
-.btn-animate:hover {
+.btn-animate:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 6px 16px var(--shadow-color);
 }
 
-.btn-animate:active {
+.btn-animate:active:not(:disabled) {
     transform: translateY(0);
 }
 
-/* Card Entrance Animation */
-.card-enter {
-    animation: fadeIn 0.4s ease-out forwards;
+.btn-animate:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
 }
+
+.btn-animate:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* General Button Styles */
+button, .button {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled),
+.button:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+button:focus-visible,
+.button:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+button:disabled,
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Enhanced button animations */
+button,
+.button {
+    transition: all var(--animation-speed-fast) var(--animation-easing);
+}
+
+button:active:not(:disabled),
+.button:active:not(:disabled) {
+    transform: scale(0.98);
+    transition-duration: calc(var(--animation-speed-fast) / 2);
+}
+
+/* Card Entrance Animation with stagger support */
+.card-enter {
+    animation: fadeIn var(--animation-speed-slow) var(--animation-easing) forwards;
+    opacity: 0;
+}
+
+/* Staggered entrance for multiple cards */
+.card-enter:nth-child(1) { animation-delay: 0ms; }
+.card-enter:nth-child(2) { animation-delay: 50ms; }
+.card-enter:nth-child(3) { animation-delay: 100ms; }
+.card-enter:nth-child(4) { animation-delay: 150ms; }
+.card-enter:nth-child(5) { animation-delay: 200ms; }
+.card-enter:nth-child(n+6) { animation-delay: 250ms; }
 
 /* Modal Animations */
 .modal-backdrop {
@@ -163,7 +399,20 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ========================================
-   🌙 Dark Mode Toggle
+   � Header Home Link
+   ======================================== */
+header a:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
+header a:active {
+    transform: scale(0.98);
+}
+
+/* ========================================
+   �🌙 Dark Mode Toggle
    ======================================== */
 .theme-toggle {
     position: relative;
@@ -191,41 +440,105 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ========================================
-   💬 Modal System
+   💬 Modal System with Full-Screen Blur
    ======================================== */
+
+/* Full-screen blur overlay - always covers entire viewport */
 .modal {
     position: fixed;
-    inset: 0;
-    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: var(--z-modal-backdrop);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background-color: var(--modal-overlay);
-    backdrop-filter: blur(4px);
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    overflow-y: auto;
+    transition: opacity var(--animation-speed-normal) var(--animation-easing), 
+                visibility var(--animation-speed-normal) var(--animation-easing);
+    animation: modalBackdropFadeIn var(--animation-speed-normal) var(--animation-easing) forwards;
 }
 
+/* Blur backdrop layer - sits behind modal dialog */
+.modal::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        135deg, 
+        rgba(245, 239, 255, 0.85) 0%,
+        rgba(229, 217, 242, 0.9) 50%,
+        rgba(245, 239, 255, 0.85) 100%
+    );
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    z-index: calc(var(--z-modal-backdrop) - 1);
+    opacity: 0;
+    transition: opacity var(--animation-speed-normal) var(--animation-easing),
+                backdrop-filter var(--animation-speed-slow) var(--animation-easing);
+}
+
+/* Dark mode blur backdrop */
+[data-theme="dark"] .modal::before {
+    background: linear-gradient(
+        135deg,
+        rgba(26, 22, 37, 0.92) 0%,
+        rgba(37, 32, 49, 0.95) 50%,
+        rgba(26, 22, 37, 0.92) 100%
+    );
+}
+
+/* Show states */
 .modal.show {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
 }
 
+.modal.show::before {
+    opacity: 1;
+}
+
+/* Modal dialog container - FIXED: proper z-index and overflow */
 .modal-dialog {
     background: var(--card-bg);
     border-radius: 1.5rem;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 25px 60px rgba(77, 47, 178, 0.2),
+                0 10px 30px rgba(165, 148, 249, 0.15);
     width: 100%;
     max-width: 500px;
+    max-height: 85vh;
     padding: 1.5rem;
-    transform: scale(0.95);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.92) translateY(30px);
+    transition: transform var(--animation-speed-slow) var(--animation-easing-smooth),
+                opacity var(--animation-speed-normal) var(--animation-easing),
+                box-shadow var(--animation-speed-normal) var(--animation-easing);
+    position: relative;
+    z-index: var(--z-modal-content);
+    opacity: 0;
+    border: 2px solid var(--border-color);
+    overflow-y: auto;
+    overflow-x: hidden;
+    animation: modalSlideIn var(--animation-speed-slow) var(--animation-easing-smooth) forwards;
+}
+
+/* Dark mode modal dialog shadow */
+[data-theme="dark"] .modal-dialog {
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6),
+                0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .modal.show .modal-dialog {
-    transform: scale(1);
+    transform: scale(1) translateY(0);
+    opacity: 1;
 }
 
 .modal-header {
@@ -246,13 +559,74 @@ h1, h2, h3, h4, h5, h6,
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s ease;
+    padding: 0.625rem;
+    border-radius: 0.75rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-width: 40px;
+    min-height: 40px;
+    outline: none;
 }
 
 .modal-close:hover {
     background-color: var(--input-bg);
+    color: var(--accent-primary);
+    transform: scale(1.05);
+}
+
+.modal-close:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+    background-color: var(--input-bg);
+}
+
+.modal-close:active {
+    transform: scale(0.95);
+    background-color: var(--border-color);
+}
+
+/* Mobile touch support */
+.modal-close {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Loading state for close button */
+.modal-close.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Tooltip for close button */
+.modal-close::after {
+    content: attr(aria-label);
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    z-index: calc(var(--z-modal-content) + 1);
+}
+
+.modal-close:hover::after,
+.modal-close:focus-visible::after {
+    opacity: 1;
 }
 
 .modal-body {
@@ -268,11 +642,11 @@ h1, h2, h3, h4, h5, h6,
 
 /* Error & Success Modals */
 .error-modal .modal-dialog {
-    border: 2px solid #ef4444;
+    border: 2px solid var(--color-error);
 }
 
 .success-modal .modal-dialog {
-    border: 2px solid #10b981;
+    border: 2px solid var(--color-success);
 }
 
 /* ========================================
@@ -310,6 +684,124 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(165, 148, 249, 0.1);
 }
 
+/* ========================================
+   📋 Dropdown & Select Styling
+   ======================================== */
+select {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A594F9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2em;
+    padding-right: 3rem !important;
+}
+
+select option {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+select:hover {
+    border-color: var(--accent-primary);
+}
+
+/* ========================================
+   📅 Date Picker Styling
+   ======================================== */
+input[type="date"] {
+    position: relative;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A594F9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3e%3c/rect%3e%3cline x1='16' y1='2' x2='16' y2='6'%3e%3c/line%3e%3cline x1='8' y1='2' x2='8' y2='6'%3e%3c/line%3e%3cline x1='3' y1='10' x2='21' y2='10'%3e%3c/line%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2em;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+input[type="time"] {
+    position: relative;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A594F9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='12' cy='12' r='10'%3e%3c/circle%3e%3cpolyline points='12 6 12 12 16 14'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2em;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Modern datepicker styling for browsers that support it */
+input[type="date"]::-webkit-datetime-edit,
+input[type="time"]::-webkit-datetime-edit {
+    padding: 0;
+}
+
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+}
+
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="time"]::-webkit-datetime-edit-text {
+    color: var(--text-muted);
+    padding: 0 0.25rem;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="time"]::-webkit-datetime-edit-hour-field,
+input[type="time"]::-webkit-datetime-edit-minute-field {
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 0.25rem;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field:hover,
+input[type="date"]::-webkit-datetime-edit-day-field:hover,
+input[type="date"]::-webkit-datetime-edit-year-field:hover,
+input[type="time"]::-webkit-datetime-edit-hour-field:hover,
+input[type="time"]::-webkit-datetime-edit-minute-field:hover {
+    background: var(--accent-primary);
+    color: white;
+}
+
+/* Number input styling */
+input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 /* Loading State */
 .loading {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -334,6 +826,7 @@ select:focus {
 
 /* ========================================
    🎯 Custom Scrollbar (for browsers that support it)
+   Soft, rounded, and consistent with sleep-like aesthetic
    ======================================== */
 ::-webkit-scrollbar {
     width: 8px;
@@ -341,17 +834,28 @@ select:focus {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-tertiary);
-    border-radius: 4px;
+    background: rgba(245, 239, 255, 0.2);
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--accent-primary);
-    border-radius: 4px;
+    background: linear-gradient(180deg, #A594F9 0%, #8B78E6 100%);
+    border-radius: 10px;
+    transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-secondary);
+    background: linear-gradient(180deg, #8B78E6 0%, #4D2FB2 100%);
+}
+
+/* Dark mode global scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: rgba(26, 22, 37, 0.3);
+}
+
+/* Smooth scrolling for entire page */
+html {
+    scroll-behavior: smooth;
 }
 
 /* ========================================
@@ -368,4 +872,1343 @@ select:focus {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+/* ========================================
+   💬 Tooltips & Helper Text with Smart Positioning
+   ======================================== */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    z-index: var(--z-base);
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    text-align: center;
+    border-radius: 12px;
+    padding: 8px 12px;
+    position: fixed; /* Fixed for viewport-relative positioning */
+    bottom: auto;
+    left: auto;
+    transform: translateX(-50%) translateY(-8px);
+    z-index: var(--z-tooltip); /* Highest z-index for tooltips */
+    opacity: 0;
+    transition: opacity var(--animation-speed-fast) var(--animation-easing), 
+                visibility var(--animation-speed-fast) var(--animation-easing),
+                transform var(--animation-speed-fast) var(--animation-easing);
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    pointer-events: none;
+    will-change: transform, opacity;
+    max-width: 300px;
+    word-wrap: break-word;
+    animation: tooltipFadeIn var(--animation-speed-fast) var(--animation-easing) forwards;
+    animation-play-state: paused;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip:focus-within .tooltip-text {
+    animation-play-state: running;
+}
+
+/* Arrow for tooltip positioned at top */
+.tooltip .tooltip-text[data-position="top"]::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--card-bg) transparent transparent transparent;
+}
+
+/* Arrow for tooltip positioned at bottom */
+.tooltip .tooltip-text[data-position="bottom"]::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent var(--card-bg) transparent;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip:focus-within .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(-8px);
+}
+
+/* Tooltip positioned below (when space above is limited) */
+.tooltip .tooltip-text[data-position="bottom"] {
+    transform: translateX(-50%) translateY(8px);
+}
+
+.tooltip:hover .tooltip-text[data-position="bottom"],
+.tooltip:focus-within .tooltip-text[data-position="bottom"] {
+    transform: translateX(-50%) translateY(8px);
+}
+
+/* Tooltip positioned to the right */
+.tooltip .tooltip-text[data-position="right"] {
+    transform: translateY(-50%) translateX(8px);
+}
+
+.tooltip:hover .tooltip-text[data-position="right"],
+.tooltip:focus-within .tooltip-text[data-position="right"] {
+    transform: translateY(-50%) translateX(8px);
+}
+
+/* Tooltip positioned to the left */
+.tooltip .tooltip-text[data-position="left"] {
+    transform: translateY(-50%) translateX(-8px);
+}
+
+.tooltip:hover .tooltip-text[data-position="left"],
+.tooltip:focus-within .tooltip-text[data-position="left"] {
+    transform: translateY(-50%) translateX(-8px);
+}
+
+/* Hover state for tooltip trigger */
+.tooltip:hover {
+    cursor: help;
+}
+
+.tooltip:focus-within {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Info Icon */
+.info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: help;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.info-icon:hover {
+    transform: scale(1.1);
+    background: var(--accent-secondary);
+}
+
+/* Helper Text */
+.helper-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    line-height: 1.4;
+    margin-top: 0.5rem;
+}
+
+.helper-text-inline {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* ========================================
+   � Tired Mode Button Styles
+   ======================================== */
+
+/* Tired Mode button - default state */
+#tiredModeToggle {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tired Mode active state */
+#tiredModeToggle.active {
+    background: linear-gradient(135deg, var(--gradient-tired-start) 0%, var(--gradient-tired-end) 100%) !important;
+    color: white !important;
+    border-color: var(--gradient-tired-start) !important;
+    box-shadow: 0 4px 16px rgba(77, 47, 178, 0.4),
+                0 0 0 3px rgba(77, 47, 178, 0.1) !important;
+}
+
+/* Tired Mode button icon pulse when active */
+#tiredModeToggle.active i {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Tired Mode feedback notification - FIXED: proper z-index and positioning */
+.tired-mode-notification {
+    position: fixed;
+    top: 80px; /* Below header */
+    right: 20px;
+    background: linear-gradient(135deg, var(--gradient-tired-start) 0%, var(--gradient-tired-end) 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(77, 47, 178, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    z-index: var(--z-notification); /* Above modals */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+               fadeOut 0.3s ease 2.7s forwards;
+    max-width: 320px;
+    pointer-events: none; /* Don't block clicks */
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(120%);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(120%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ========================================
+   �📊 Category Tabs System
+   ======================================== */
+
+/* Category tabs container - prevents upward drift */
+.category-tabs-container {
+    position: relative;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    min-height: 60px; /* Prevents collapse */
+    z-index: var(--z-content); /* Below header, above content */
+}
+
+/* Tabs wrapper with flexbox */
+.category-tabs-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    scroll-behavior: smooth;
+}
+
+.category-tabs-wrapper::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+/* Individual tab styling */
+.category-tab {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0; /* Prevents squishing */
+}
+
+.category-tab a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px var(--shadow-color);
+    border: 2px solid transparent;
+    position: relative;
+    z-index: 1;
+}
+
+/* Inactive tab state */
+.category-tab a:not(.active) {
+    background: var(--card-bg);
+    color: var(--accent-primary);
+    border-color: var(--border-color);
+}
+
+/* Active tab state */
+.category-tab a.active,
+.category-tab a[style*="background: var(--accent-primary)"] {
+    background: var(--accent-primary) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px var(--shadow-color), 0 2px 6px rgba(165, 148, 249, 0.4) !important;
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+}
+
+/* Hover states */
+.category-tab a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px var(--shadow-color);
+}
+
+.category-tab a.active:hover,
+.category-tab a[style*="background: var(--accent-primary)"]:hover {
+    box-shadow: 0 8px 20px var(--shadow-color), 0 4px 10px rgba(165, 148, 249, 0.5) !important;
+}
+
+/* Focus state for accessibility */
+.category-tab a:focus-visible {
+    outline: 3px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius: 0.75rem;
+}
+
+/* Prevent layout shift on focus */
+.category-tab a:focus {
+    position: relative;
+}
+
+/* Single dynamic category description - shown below all tabs */
+.category-description-text {
+    display: block;
+    margin-top: 0.75rem;
+    text-align: left;
+    padding-left: 0.25rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    font-weight: 600;
+    min-height: 1.5rem;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Remove old per-tab descriptions */
+.category-description {
+    display: none;
+}
+
+/* Animation for description text change */
+@keyframes fadeInDescription {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Task list container smooth transitions with fade effect */
+#taskListContainer {
+    transition: opacity var(--animation-speed-normal) var(--animation-easing),
+                transform var(--animation-speed-normal) var(--animation-easing);
+}
+
+#taskListContainer.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+#taskListContainer.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+#taskListContainer.fade-in {
+    animation: fadeIn var(--animation-speed-normal) var(--animation-easing) forwards;
+}
+
+/* Tab link smooth transitions with scale effect */
+.category-tab-link {
+    transition: all var(--animation-speed-normal) var(--animation-easing) !important;
+    position: relative;
+}
+
+.category-tab-link:not(.active):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.category-tab-link:active {
+    transform: translateY(0);
+    transition-duration: var(--animation-speed-fast);
+}
+
+/* Active tab pulse animation */
+.category-tab-link.active {
+    animation: tabActivate var(--animation-speed-normal) var(--animation-easing-smooth);
+}
+
+/* ========================================
+   🎨 Task Action Buttons (Edit/Delete)
+   ======================================== */
+
+/* Base style for action buttons */
+.task-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    border: 2px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+/* Edit button - purple theme */
+.task-edit-btn {
+    background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%);
+    color: white;
+    border-color: var(--accent-primary);
+}
+
+.task-edit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(165, 148, 249, 0.5);
+    background: linear-gradient(135deg, var(--gradient-primary-end) 0%, var(--gradient-primary-start) 100%);
+}
+
+.task-edit-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(165, 148, 249, 0.4);
+}
+
+/* Delete button - red theme */
+.task-delete-btn {
+    background: linear-gradient(135deg, var(--gradient-danger-start) 0%, var(--gradient-danger-end) 100%);
+    color: white;
+    border-color: var(--gradient-danger-start);
+}
+
+.task-delete-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
+    background: linear-gradient(135deg, var(--gradient-danger-end) 0%, var(--gradient-danger-start) 100%);
+}
+
+.task-delete-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* Focus states for accessibility */
+.task-action-btn:focus-visible {
+    outline: 3px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+.task-delete-btn:focus-visible {
+    outline-color: #ef4444;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .task-edit-btn {
+    box-shadow: 0 2px 8px rgba(165, 148, 249, 0.3);
+}
+
+[data-theme="dark"] .task-delete-btn {
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .category-tab a {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+    
+    .category-tabs-container {
+        min-height: 75px;
+    }
+    
+    .category-description {
+        font-size: 0.625rem;
+        max-width: 150px;
+    }
+    
+    .tired-mode-notification {
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        font-size: 0.875rem;
+        padding: 0.875rem 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .category-tab a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    
+    .category-tabs-container {
+        min-height: 70px;
+    }
+    
+    .category-description {
+        font-size: 0.625rem;
+        max-width: 120px;
+    }
+}
+
+/* ========================================
+   📦 Compact Task Modal System
+   ======================================== */
+
+/* Task modal container - centered and space-efficient */
+.task-modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow-y: auto;
+    /* Blur overlay */
+    background: linear-gradient(135deg, 
+        var(--modal-overlay) 0%, 
+        rgba(165, 148, 249, 0.15) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.task-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 1.5rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 60px var(--shadow-color), 
+                0 8px 24px rgba(165, 148, 249, 0.12);
+    animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Ensure scrollbar stays within bounds */
+    padding-right: 2px; /* Prevent scrollbar from touching edge */
+}
+
+@keyframes modalSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Compact modal header */
+.task-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    gap: 1rem;
+}
+
+.task-modal-header h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.task-modal-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0.125rem 0 0 0;
+    font-weight: 600;
+}
+
+.task-modal-close {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background: var(--input-bg);
+    color: var(--accent-primary);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: manipulation;
+}
+
+.task-modal-close:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    background: var(--accent-primary);
+    color: white;
+}
+
+.task-modal-close:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+.task-modal-close:active {
+    transform: scale(0.96);
+}
+
+/* Compact modal body */
+.task-modal-body {
+    padding: 1.25rem;
+}
+
+/* Compact form spacing */
+.task-form-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.task-form-compact .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+/* Inline label for space efficiency */
+.task-form-compact .form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
+    margin-left: 0.25rem;
+}
+
+.task-form-compact .form-input,
+.task-form-compact .form-select,
+.task-form-compact .form-textarea {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.875rem;
+    border: 2px solid transparent;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.task-form-compact .form-input:focus,
+.task-form-compact .form-select:focus,
+.task-form-compact .form-textarea:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(165, 148, 249, 0.1);
+    background: var(--bg-secondary);
+}
+
+.task-form-compact .form-textarea {
+    resize: vertical;
+    min-height: 4rem;
+    max-height: 8rem;
+}
+
+/* Two-column layout for space efficiency */
+.task-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.875rem;
+}
+
+/* Energy slider compact styling */
+.energy-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.energy-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.energy-value {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.energy-slider {
+    width: 100%;
+    height: 0.5rem;
+    border-radius: 0.5rem;
+    appearance: none;
+    background: var(--input-bg);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.energy-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.energy-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.energy-slider::-moz-range-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.energy-slider::-moz-range-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.energy-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 0 0.125rem;
+}
+
+/* Expandable description */
+.description-expandable {
+    position: relative;
+    max-height: 4rem;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.description-expandable.expanded {
+    max-height: 12rem;
+}
+
+.description-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.description-toggle:hover {
+    background: var(--input-bg);
+    transform: translateX(2px);
+}
+
+/* Compact submit button */
+.task-submit-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.875rem;
+    border: none;
+    background: var(--accent-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: manipulation;
+}
+
+.task-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--shadow-color);
+}
+
+.task-submit-btn:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+.task-submit-btn:active {
+    transform: translateY(0);
+}
+
+.task-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Select dropdown styling */
+.form-select-wrapper {
+    position: relative;
+}
+
+.form-select-wrapper select {
+    appearance: none;
+    padding-right: 2.5rem;
+}
+
+.form-select-icon {
+    position: absolute;
+    right: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+    height: 1rem;
+    color: var(--accent-primary);
+    pointer-events: none;
+}
+
+/* Tooltip enhancements for compact modals */
+.task-form-compact .tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.task-form-compact .tooltip .tooltip-text {
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.375rem 0.625rem;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    font-size: 0.6875rem;
+    border-radius: 0.5rem;
+    white-space: normal;
+    width: max-content;
+    max-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.task-form-compact .tooltip:hover .tooltip-text {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Validation error styling */
+.task-form-compact .validation-error {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #ef4444;
+    margin: 0.25rem 0 0 0.25rem;
+}
+
+/* Responsive modal adjustments */
+@media (max-width: 640px) {
+    .task-modal-content {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: 1.25rem;
+    }
+    
+    .task-modal-header {
+        padding: 0.875rem 1rem;
+    }
+    
+    .task-modal-header h3 {
+        font-size: 1rem;
+    }
+    
+    .task-modal-body {
+        padding: 1rem;
+    }
+    
+    .task-form-row {
+        grid-template-columns: 1fr;
+        gap: 0.875rem;
+    }
+    
+    .task-form-compact {
+        gap: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .task-modal-container {
+        padding: 0.5rem;
+    }
+    
+    .task-modal-content {
+        border-radius: 1rem;
+    }
+    
+    .task-form-compact .form-input,
+    .task-form-compact .form-select,
+    .task-form-compact .form-textarea {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+}
+
+/* Focus trap indicator */
+.task-modal-container:focus-within .task-modal-content {
+    box-shadow: 0 20px 60px var(--shadow-color), 
+                0 8px 24px rgba(165, 148, 249, 0.12),
+                0 0 0 2px var(--accent-primary);
+}
+
+/* ========================================
+   📜 Modal Scrollbar - Sleep-like Aesthetic
+   Minimal, soft, and consistent with theme
+   FIXED: Contained within modal boundaries
+   ======================================== */
+
+/* Scrollbar for modal content - thin and elegant */
+.modal-dialog::-webkit-scrollbar,
+.task-modal-content::-webkit-scrollbar {
+    width: 8px; /* Minimal width for better visibility */
+}
+
+/* Scrollbar track - soft lavender background with padding from edges */
+.modal-dialog::-webkit-scrollbar-track,
+.task-modal-content::-webkit-scrollbar-track {
+    background: rgba(245, 239, 255, 0.25);
+    border-radius: 12px;
+    margin: 12px 0; /* Top and bottom padding from modal edges */
+    border: 2px solid transparent; /* Creates internal spacing */
+}
+
+/* Scrollbar thumb - rounded purple gradient */
+.modal-dialog::-webkit-scrollbar-thumb,
+.task-modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #A594F9 0%, #8B78E6 100%);
+    border-radius: 12px;
+    border: 2px solid transparent; /* Creates inset appearance */
+    background-clip: padding-box; /* Ensures gradient respects border */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scrollbar thumb hover - deeper purple with smooth transition */
+.modal-dialog::-webkit-scrollbar-thumb:hover,
+.task-modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #8B78E6 0%, #7B68D6 100%);
+    border-width: 1px; /* Slightly expand on hover */
+}
+
+/* Scrollbar thumb active state */
+.modal-dialog::-webkit-scrollbar-thumb:active,
+.task-modal-content::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(180deg, #7B68D6 0%, #4D2FB2 100%);
+}
+
+/* Dark mode scrollbar adjustments */
+[data-theme="dark"] .modal-dialog::-webkit-scrollbar-track,
+[data-theme="dark"] .task-modal-content::-webkit-scrollbar-track {
+    background: rgba(26, 22, 37, 0.4);
+}
+
+[data-theme="dark"] .modal-dialog::-webkit-scrollbar-thumb,
+[data-theme="dark"] .task-modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #9B87F5 0%, #8B78E6 100%);
+}
+
+[data-theme="dark"] .modal-dialog::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .task-modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #B8A7D9 0%, #9B87F5 100%);
+}
+
+/* Firefox scrollbar styling - thin and soft */
+.modal-dialog,
+.task-modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: #A594F9 rgba(245, 239, 255, 0.25);
+}
+
+[data-theme="dark"] .modal-dialog,
+[data-theme="dark"] .task-modal-content {
+    scrollbar-color: #9B87F5 rgba(26, 22, 37, 0.4);
+}
+
+/* Ensure scrollbar stays within bounds and doesn't overflow */
+.modal-dialog,
+.task-modal-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 85vh;
+    position: relative;
+    /* Create scrollbar gutter to prevent content shift */
+    scrollbar-gutter: stable;
+}
+
+/* ========================================
+   🎯 Task Card Enhancements
+   ======================================== */
+
+/* Smooth transitions for task cards */
+.task-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.4s ease,
+                transform 0.3s ease;
+    will-change: opacity, transform;
+}
+
+/* Tired Mode hidden state with smooth animation */
+.task-card.animating-out {
+    animation: fadeOutCard var(--animation-speed-normal) var(--animation-easing) forwards;
+    pointer-events: none;
+}
+
+.task-card.animating-in {
+    animation: fadeInCard var(--animation-speed-slow) var(--animation-easing-smooth) forwards;
+}
+
+/* Search filter animation */
+.task-card[data-search-hidden="true"] {
+    animation: fadeOutCard var(--animation-speed-fast) var(--animation-easing) forwards;
+}
+
+.task-card[data-search-visible="true"] {
+    animation: fadeInCard var(--animation-speed-normal) var(--animation-easing) forwards;
+}
+
+@keyframes fadeOutCard {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        max-height: 200px; /* Approximate max height */
+        margin-bottom: 1rem;
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+        max-height: 0;
+        margin-bottom: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-width: 0;
+    }
+}
+
+@keyframes fadeInCard {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Dark mode enhancements for task cards */
+[data-theme="dark"] .task-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .task-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* ========================================
+   🔧 Global Enhancements
+   ======================================== */
+
+/* Ensure body has proper background in dark mode */
+[data-theme="dark"] body {
+    background-color: var(--bg-primary);
+}
+
+/* Smooth page transitions */
+.page-transition {
+    animation: pageLoadFade 0.5s ease-in-out;
+}
+
+@keyframes pageLoadFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   🔔 Notification Container System
+   ======================================== */
+
+/* Global notification container for stacking multiple notifications */
+.notification-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: var(--z-notification);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+    pointer-events: none; /* Allow clicks through container */
+}
+
+.notification-container > * {
+    pointer-events: auto; /* Enable clicks on notifications themselves */
+}
+
+/* Base notification styling with smooth animations */
+.notification {
+    position: relative;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--shadow-color), 
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    animation: notificationSlideIn var(--animation-speed-slow) var(--animation-easing-smooth) forwards;
+    transition: all var(--animation-speed-normal) var(--animation-easing),
+                transform var(--animation-speed-fast) var(--animation-easing);
+    transform-origin: right center;
+}
+
+.notification:hover {
+    transform: translateX(-4px);
+    box-shadow: 0 12px 32px var(--shadow-color),
+                0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.notification.notification-success {
+    background: linear-gradient(135deg, var(--gradient-success-start) 0%, var(--gradient-success-end) 100%);
+}
+
+.notification.notification-error {
+    background: linear-gradient(135deg, var(--gradient-error-start) 0%, var(--gradient-error-end) 100%);
+}
+
+.notification.notification-warning {
+    background: linear-gradient(135deg, var(--gradient-warning-start) 0%, var(--gradient-warning-end) 100%);
+}
+
+.notification.notification-info {
+    background: linear-gradient(135deg, var(--gradient-info-start) 0%, var(--gradient-info-end) 100%);
+}
+
+/* Notification dismiss button with smooth transitions */
+.notification-dismiss {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--animation-speed-fast) var(--animation-easing);
+    opacity: 0.8;
+}
+
+.notification-dismiss:hover {
+    background: rgba(255, 255, 255, 0.3);
+    opacity: 1;
+    transform: scale(1.15) rotate(90deg);
+}
+
+.notification-dismiss:active {
+    transform: scale(0.95) rotate(90deg);
+}
+
+/* Notification icon */
+.notification-icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* ========================================
+   🎯 Pop-up Priority System
+   Ensures correct layering of all interactive elements
+   ======================================== */
+
+/* Ensure dropdowns appear above other content */
+.dropdown-menu,
+.select-dropdown {
+    position: absolute;
+    z-index: var(--z-dropdown);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px var(--shadow-color);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Overlay for modal backdrop - prevents interaction with page */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-overlay);
+    background: var(--modal-overlay);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: opacity 0.3s ease;
+}
+
+/* Popovers for additional info */
+.popover {
+    position: fixed;
+    z-index: calc(var(--z-tooltip) - 1);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 8px 24px var(--shadow-color);
+    max-width: 300px;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ========================================
+   📱 Responsive Pop-up Adjustments
+   ======================================== */
+
+@media (max-width: 640px) {
+    .notification-container {
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
+    }
+
+    .notification {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.8125rem;
+    }
+
+    .tooltip .tooltip-text {
+        max-width: 200px;
+        font-size: 0.6875rem;
+        padding: 6px 10px;
+    }
+
+    /* Ensure modals don't exceed screen on mobile */
+    .modal-dialog,
+    .task-modal-content {
+        max-width: calc(100vw - 2rem);
+        max-height: 90vh;
+    }
+}
+
+/* ========================================
+   ⚡ Performance Optimizations
+   ======================================== */
+
+/* Enable hardware acceleration for animated elements */
+.tooltip,
+.notification,
+.modal,
+.popover {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
