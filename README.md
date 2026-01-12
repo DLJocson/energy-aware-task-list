@@ -1,5 +1,3 @@
-# energy-aware-task-list
-
 <div align="center">
 	<h1>⚡ Energy-Aware Task List</h1>
 	<hr/>
